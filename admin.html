@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Modération — Art & Poésie</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f6eef1;
+      --surface:#ffffff;
+      --text:#1f1f1f;
+      --muted:#5b4a3f;
+      --accent:#b55f71;
+      --accent-2:#5f8d8b;
+      --danger:#a23a4d;
+      --shadow:rgba(0,0,0,.08);
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{
+      font-family:'Inter',sans-serif;
+      background:linear-gradient(180deg,#faf3f0 0%, #f4efe8 100%);
+      color:var(--text);
+      min-height:100vh;
+      padding:60px 8% 80px;
+    }
+    h1{
+      font-family:'Cormorant Garamond',serif;
+      color:var(--accent-2);
+      font-size:3rem;
+      margin-bottom:8px;
+    }
+    .lead{
+      color:var(--muted);
+      margin-bottom:32px;
+      max-width:680px;
+      line-height:1.6;
+    }
+    .toolbar{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-bottom:24px;
+    }
+    .filter{
+      display:inline-flex;
+      gap:6px;
+      background:var(--surface);
+      border-radius:999px;
+      padding:6px;
+      box-shadow:0 8px 20px var(--shadow);
+    }
+    .filter button{
+      border:none;
+      background:transparent;
+      padding:8px 16px;
+      border-radius:999px;
+      cursor:pointer;
+      color:var(--muted);
+      font-size:.9rem;
+    }
+    .filter button.active{
+      background:var(--accent);
+      color:#fff;
+    }
+    .logout{
+      margin-left:auto;
+      border:none;
+      background:transparent;
+      color:var(--muted);
+      cursor:pointer;
+      font-size:.9rem;
+      text-decoration:underline;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+      gap:20px;
+    }
+    .card{
+      background:var(--surface);
+      border-radius:18px;
+      padding:24px;
+      box-shadow:0 12px 28px var(--shadow);
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .card .badge{
+      align-self:flex-start;
+      font-size:.75rem;
+      padding:4px 10px;
+      border-radius:999px;
+      font-weight:600;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+    }
+    .badge.pending{background:#fde9e8;color:var(--accent)}
+    .badge.approved{background:#e1efe9;color:var(--accent-2)}
+    .card img{
+      width:100%;
+      max-height:280px;
+      object-fit:cover;
+      border-radius:10px;
+    }
+    .card .title{
+      font-family:'Cormorant Garamond',serif;
+      font-size:1.5rem;
+      color:var(--accent-2);
+    }
+    .card .meta{
+      font-size:.85rem;
+      color:var(--muted);
+      font-style:italic;
+    }
+    .card .text{
+      white-space:pre-wrap;
+      line-height:1.6;
+      color:var(--text);
+      font-size:.95rem;
+      max-height:240px;
+      overflow:auto;
+    }
+    .actions{
+      display:flex;
+      gap:8px;
+      margin-top:auto;
+      flex-wrap:wrap;
+    }
+    .actions button{
+      flex:1;
+      min-width:120px;
+      padding:10px 14px;
+      border:none;
+      border-radius:10px;
+      cursor:pointer;
+      font-size:.9rem;
+      font-weight:500;
+      transition:.2s;
+    }
+    .approve{
+      background:var(--accent-2);
+      color:#fff;
+    }
+    .approve:hover{filter:brightness(1.05)}
+    .reject{
+      background:transparent;
+      color:var(--danger);
+      border:1px solid var(--danger) !important;
+    }
+    .reject:hover{background:var(--danger);color:#fff}
+    button:disabled{opacity:.5;cursor:not-allowed}
+    .empty{
+      grid-column:1/-1;
+      padding:60px;
+      text-align:center;
+      color:var(--muted);
+      font-style:italic;
+    }
+    .gate{
+      max-width:420px;
+      margin:80px auto 0;
+      background:var(--surface);
+      padding:36px;
+      border-radius:20px;
+      box-shadow:0 16px 36px var(--shadow);
+    }
+    .gate h1{font-size:2rem;margin-bottom:6px}
+    .gate p{color:var(--muted);margin-bottom:20px}
+    .gate label{
+      display:block;
+      font-size:.9rem;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+    .gate input{
+      width:100%;
+      padding:12px 14px;
+      border:1px solid rgba(95,141,139,.25);
+      border-radius:10px;
+      font-family:inherit;
+      font-size:1rem;
+      background:#fbf7f4;
+    }
+    .gate input:focus{outline:none;border-color:var(--accent)}
+    .gate button{
+      margin-top:18px;
+      width:100%;
+      padding:12px 14px;
+      border:none;
+      border-radius:50px;
+      cursor:pointer;
+      font-size:1rem;
+      color:#fff;
+      background:linear-gradient(135deg, var(--accent), #8d7fb3);
+    }
+    .status{
+      min-height:1.4em;
+      font-size:.9rem;
+      margin-top:14px;
+    }
+    .status.error{color:var(--danger)}
+    .status.success{color:var(--accent-2)}
+    a.back{
+      color:var(--muted);
+      text-decoration:none;
+      font-size:.9rem;
+    }
+    a.back:hover{color:var(--accent)}
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+    const TOKEN_KEY = 'artpoesie:admin-token';
+    const app = document.getElementById('app');
+
+    const escapeHtml = (str) => String(str ?? '').replace(/[&<>"']/g, (c) => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+
+    const getToken = () => sessionStorage.getItem(TOKEN_KEY) || '';
+    const setToken = (t) => sessionStorage.setItem(TOKEN_KEY, t);
+    const clearToken = () => sessionStorage.removeItem(TOKEN_KEY);
+
+    const renderGate = (errorMsg) => {
+      app.innerHTML = `
+        <div class="gate">
+          <h1>Modération</h1>
+          <p>Entrez le mot de passe d'administration pour gérer les œuvres soumises.</p>
+          <form id="gate-form">
+            <label for="pw">Mot de passe</label>
+            <input id="pw" type="password" autocomplete="current-password" required />
+            <button type="submit">Entrer</button>
+            <div class="status ${errorMsg ? 'error' : ''}" id="gate-status">${escapeHtml(errorMsg || '')}</div>
+          </form>
+          <p style="margin-top:18px"><a class="back" href="/">← Retour au site</a></p>
+        </div>
+      `;
+      document.getElementById('gate-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const pw = document.getElementById('pw').value;
+        const statusEl = document.getElementById('gate-status');
+        statusEl.textContent = 'Vérification...';
+        statusEl.className = 'status';
+        try {
+          const res = await fetch('/api/admin/artworks', {
+            headers: { Authorization: `Bearer ${pw}` },
+          });
+          if (res.status === 401) {
+            statusEl.textContent = 'Mot de passe incorrect.';
+            statusEl.className = 'status error';
+            return;
+          }
+          if (res.status === 503) {
+            const data = await res.json().catch(() => ({}));
+            statusEl.textContent = data.error || 'Modération non configurée.';
+            statusEl.className = 'status error';
+            return;
+          }
+          if (!res.ok) throw new Error('Échec de la connexion.');
+          setToken(pw);
+          renderApp();
+        } catch (err) {
+          statusEl.textContent = err.message || 'Erreur.';
+          statusEl.className = 'status error';
+        }
+      });
+    };
+
+    let currentFilter = 'pending';
+
+    const renderApp = async () => {
+      app.innerHTML = `
+        <h1>Modération</h1>
+        <p class="lead">
+          Examinez chaque œuvre soumise par la communauté. Approuvez celles que vous souhaitez voir
+          apparaître dans la galerie publique, refusez celles qui ne conviennent pas.
+        </p>
+        <div class="toolbar">
+          <div class="filter" id="filter">
+            <button data-filter="pending" class="${currentFilter==='pending'?'active':''}">À examiner</button>
+            <button data-filter="approved" class="${currentFilter==='approved'?'active':''}">Publiées</button>
+            <button data-filter="all" class="${currentFilter==='all'?'active':''}">Toutes</button>
+          </div>
+          <a class="back" href="/">← Retour au site</a>
+          <button class="logout" id="logout">Se déconnecter</button>
+        </div>
+        <div class="status" id="global-status"></div>
+        <div class="grid" id="list"><div class="empty">Chargement...</div></div>
+      `;
+      document.getElementById('logout').addEventListener('click', () => {
+        clearToken();
+        renderGate();
+      });
+      document.getElementById('filter').addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-filter]');
+        if (!btn) return;
+        currentFilter = btn.dataset.filter;
+        renderApp();
+      });
+      await loadList();
+    };
+
+    const loadList = async () => {
+      const listEl = document.getElementById('list');
+      try {
+        const res = await fetch('/api/admin/artworks', {
+          headers: { Authorization: `Bearer ${getToken()}` },
+        });
+        if (res.status === 401) {
+          clearToken();
+          renderGate('Session expirée. Reconnectez-vous.');
+          return;
+        }
+        if (!res.ok) throw new Error('Échec du chargement.');
+        const data = await res.json();
+        const all = data.artworks || [];
+        const filtered = all.filter((a) => currentFilter === 'all' || a.status === currentFilter);
+
+        if (filtered.length === 0) {
+          listEl.innerHTML = `<div class="empty">${
+            currentFilter === 'pending'
+              ? 'Aucune œuvre en attente de validation.'
+              : currentFilter === 'approved'
+              ? 'Aucune œuvre publiée pour l’instant.'
+              : 'Aucune œuvre soumise pour l’instant.'
+          }</div>`;
+          return;
+        }
+
+        listEl.innerHTML = filtered.map((a) => {
+          const img = a.hasImage
+            ? `<img src="/api/artworks/${encodeURIComponent(a.id)}/image" alt="${escapeHtml(a.title)}" />`
+            : '';
+          const text = a.text ? `<div class="text">${escapeHtml(a.text)}</div>` : '';
+          const date = new Date(a.createdAt).toLocaleString('fr-FR');
+          const approveBtn = a.status === 'approved'
+            ? ''
+            : `<button class="approve" data-action="approve" data-id="${escapeHtml(a.id)}">Approuver</button>`;
+          return `
+            <article class="card">
+              <span class="badge ${a.status}">${a.status === 'pending' ? 'À examiner' : 'Publiée'}</span>
+              ${img}
+              <div class="title">${escapeHtml(a.title)}</div>
+              <div class="meta">— ${escapeHtml(a.author || 'Anonyme')} · ${escapeHtml(date)}</div>
+              ${text}
+              <div class="actions">
+                ${approveBtn}
+                <button class="reject" data-action="reject" data-id="${escapeHtml(a.id)}">Supprimer</button>
+              </div>
+            </article>
+          `;
+        }).join('');
+
+        listEl.querySelectorAll('button[data-action]').forEach((btn) => {
+          btn.addEventListener('click', () => moderate(btn));
+        });
+      } catch (err) {
+        listEl.innerHTML = `<div class="empty">Impossible de charger les œuvres.</div>`;
+      }
+    };
+
+    const moderate = async (btn) => {
+      const action = btn.dataset.action;
+      const id = btn.dataset.id;
+      const card = btn.closest('.card');
+      if (action === 'reject' && !confirm('Supprimer définitivement cette œuvre ?')) return;
+      card.querySelectorAll('button').forEach((b) => b.disabled = true);
+      try {
+        const res = await fetch(`/api/admin/artworks/${encodeURIComponent(id)}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getToken()}`,
+          },
+          body: JSON.stringify({ action }),
+        });
+        if (res.status === 401) {
+          clearToken();
+          renderGate('Session expirée. Reconnectez-vous.');
+          return;
+        }
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.error || 'Action impossible.');
+        }
+        await loadList();
+      } catch (err) {
+        const status = document.getElementById('global-status');
+        status.textContent = err.message || 'Erreur lors de la modération.';
+        status.className = 'status error';
+        card.querySelectorAll('button').forEach((b) => b.disabled = false);
+      }
+    };
+
+    if (getToken()) {
+      renderApp();
+    } else {
+      renderGate();
+    }
+  </script>
+</body>
+</html>
