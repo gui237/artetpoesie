@@ -145,6 +145,11 @@
       flex-direction:column;
       overflow:hidden;
       border-left:6px solid rgba(181,95,113,.3);
+      text-decoration:none;
+    }
+    .artwork-card:focus-visible{
+      outline:3px solid var(--accent);
+      outline-offset:4px;
     }
     .artwork-card img{
       width:100%;
@@ -374,12 +379,12 @@
           : '';
         const text = a.text ? `<div class="text">${escapeHtml(a.text)}</div>` : '';
         return `
-          <article class="card artwork-card">
+          <a class="card artwork-card" href="/artwork.html?id=${encodeURIComponent(a.id)}" aria-label="Ouvrir ${escapeHtml(a.title)}">
             ${img}
             <div class="title">${escapeHtml(a.title)}</div>
             <div class="author">— ${escapeHtml(a.author || 'Anonyme')}</div>
             ${text}
-          </article>
+          </a>
         `;
       }).join('');
     };
