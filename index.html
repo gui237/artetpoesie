@@ -178,6 +178,63 @@
     .card:nth-child(3){background:#f0e6f0}
     #journal .card{background:#fff4e7}
     #contact .card{background:#e7f4f0}
+    #web3{
+      background:
+        linear-gradient(120deg, rgba(255,255,255,.46), rgba(247,216,223,.34)),
+        linear-gradient(180deg, rgba(95,141,139,.08), rgba(181,95,113,.08));
+    }
+    .web3-panel{
+      width:min(760px,100%);
+      margin:40px auto 0;
+      padding:34px;
+      border-radius:18px;
+      background:rgba(255,255,255,.72);
+      border:1px solid rgba(181,95,113,.16);
+      box-shadow:0 16px 36px var(--shadow);
+      display:grid;
+      gap:22px;
+      position:relative;
+      overflow:hidden;
+    }
+    .web3-panel::before{
+      content:'';
+      position:absolute;
+      inset:16px auto 16px 0;
+      width:6px;
+      border-radius:999px;
+      background:linear-gradient(180deg, rgba(181,95,113,.36), rgba(95,141,139,.36));
+    }
+    .web3-copy{
+      font-family:'Cormorant Garamond',serif;
+      font-size:1.45rem;
+      line-height:1.55;
+      color:var(--muted);
+    }
+    .web3-actions{
+      display:flex;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:16px;
+    }
+    .wallet-button{
+      margin-top:0;
+    }
+    .wallet-address{
+      padding:10px 14px;
+      border-radius:999px;
+      background:#fbf7f4;
+      color:var(--accent-2);
+      border:1px solid rgba(95,141,139,.2);
+      font-size:.92rem;
+      overflow-wrap:anywhere;
+    }
+    .wallet-status{
+      min-height:1.5em;
+      color:var(--muted);
+      line-height:1.6;
+    }
+    .wallet-status.error{color:#a23a4d}
+    .wallet-status.success{color:var(--accent-2)}
     .card:nth-child(odd){border-left:6px solid rgba(181,95,113,.3)}
     .card:nth-child(even){border-left:6px solid rgba(95,141,139,.3)}
     .artwork-card{
@@ -289,6 +346,10 @@
     @media(max-width:768px){
       h1{font-size:3rem}
       nav{display:none}
+      .web3-panel{padding:28px 24px}
+      .web3-actions{align-items:stretch;flex-direction:column}
+      .wallet-button{width:100%}
+      .wallet-address{border-radius:12px}
     }
   </style>
 </head>
@@ -299,6 +360,7 @@
       <a href="#galerie">Galerie</a>
       <a href="#journal">Journal</a>
       <a href="#create">Publier</a>
+      <a href="#web3">Web3</a>
       <a href="#contact">Contact</a>
     </nav>
   </header>
@@ -332,6 +394,24 @@
       <h2>Journal créatif</h2>
       <div class="card">
         Pensées, inspirations, carnets de création et exploration du geste artistique.
+      </div>
+    </section>
+
+    <section id="web3">
+      <h2>Atelier Web3</h2>
+      <p class="intro" style="margin-top:0">
+        Une présence légère sur la chaîne, sans paiement, signature ni transaction.
+      </p>
+      <div class="web3-panel" aria-labelledby="web3-title">
+        <p class="web3-copy" id="web3-title">
+          Reliez votre portefeuille MetaMask comme on signe un carnet de visite : seulement pour
+          reconnaître votre adresse, jamais pour demander une clé secrète.
+        </p>
+        <div class="web3-actions">
+          <button type="button" class="button wallet-button" id="connect-wallet">Connect Wallet</button>
+          <div class="wallet-address" id="wallet-address" hidden></div>
+        </div>
+        <div class="wallet-status" id="wallet-status" role="status" aria-live="polite"></div>
       </div>
     </section>
 
@@ -495,5 +575,6 @@
 
     loadGallery();
   </script>
+  <script src="web3.js"></script>
 </body>
 </html>
